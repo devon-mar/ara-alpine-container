@@ -32,7 +32,7 @@ jobs:
           context: .
           load: true
           tags: ${{ env.TEST_TAG }}
-          build-args: ARA_VESRION=${{ env.ARA_VERSION }}
+          build-args: ARA_VERSION=${{ env.ARA_VERSION }}
 
       - name: Test
         run: |
@@ -58,4 +58,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/${{ github.repository }}:${{ env.ARA_VERSION }}
           push: true
-          build-args: ARA_VESRION=${{ env.ARA_VERSION }}
+          build-args: ARA_VERSION=${{ env.ARA_VERSION }}
