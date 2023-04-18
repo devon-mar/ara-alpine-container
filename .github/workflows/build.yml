@@ -1,0 +1,61 @@
+---
+name: build
+
+"on":
+  push:
+    branches: [master]
+  pull_request:
+
+env:
+  TEST_TAG: aratest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      # bit of a hack to get dependabot to keep this up to date
+      - name: Get the ara version from requirements.txt
+        run: echo "ARA_VERSION=$(cat requirements.txt | cut -d '=' -f3)" >> "$GITHUB_ENV"
+
+      - name: Login to GitHub Container Registry
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test
+        run: |
+          docker run -d --rm -p 8000:8000 "$TEST_TAG"
+          for i in {1..20}; do curl "$ARA_TEST_ENDPOINT" && break || echo -e "\033[0;33mNot started yet ($i)\033[0m" && sleep 1; done]]"
+          curl "$ARA_TEST_ENDPOINT"
+        env:
+          ARA_TEST_ENDPOINT: http://localhost:8000
+
+      - name: Build and export to Docker
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          load: true
+          tags: ${{ env.TEST_TAG }}
+          build-args: ARA_VESRION=${{ env.ARA_VERSION }}
+
+      - name: Build and push
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/${{ github.repository }}:${{ env.ARA_VERSION }}
+          push: true
+          build-args: ARA_VESRION=${{ env.ARA_VERSION }}
