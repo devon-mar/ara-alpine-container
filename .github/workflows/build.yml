@@ -53,12 +53,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Docker meta
+        id: meta
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=v${{ env.ARA_VERSION }}
+            type=raw,value=latest
+
       - name: Build and push
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: docker/build-push-action@v3
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/${{ github.repository }}:${{ env.ARA_VERSION }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           push: true
           build-args: ARA_VERSION=${{ env.ARA_VERSION }}
