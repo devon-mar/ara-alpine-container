@@ -26,14 +26,6 @@ jobs:
       - name: Get the ara version from requirements.txt
         run: echo "ARA_VERSION=$(cat requirements.txt | cut -d '=' -f3)" >> "$GITHUB_ENV"
 
-      - name: Login to GitHub Container Registry
-        if: ${{ github.ref == 'refs/heads/master' }}
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build and export to Docker
         uses: docker/build-push-action@v3
         with:
@@ -49,6 +41,14 @@ jobs:
           curl "$ARA_TEST_ENDPOINT"
         env:
           ARA_TEST_ENDPOINT: http://localhost:8000
+
+      - name: Login to GitHub Container Registry
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
         if: ${{ github.ref == 'refs/heads/master' }}
