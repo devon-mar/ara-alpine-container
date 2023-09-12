@@ -23,7 +23,7 @@ jobs:
         uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       # bit of a hack to get dependabot to keep this up to date
       - name: Get the ara version from requirements.txt
