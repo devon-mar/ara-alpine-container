@@ -1,1 +1,1 @@
-ara[server]==1.7.1
+ara[server]==1.7.2
