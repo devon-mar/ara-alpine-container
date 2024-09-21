@@ -13,7 +13,7 @@ COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["gunicorn", "--workers=4", "--access-logfile", "-", "--bind", "0.0.0.0:8000", "ara.server.wsgi"]
+CMD ["gunicorn", "--workers=4", "--access-logfile", "-", "--bind", "[::]:8000", "ara.server.wsgi"]
 
 VOLUME ["/opt/ara"]
 
