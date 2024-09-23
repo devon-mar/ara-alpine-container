@@ -6,7 +6,7 @@ ENV ARA_BASE_DIR=/opt/ara
 
 RUN mkdir "$ARA_BASE_DIR" \
     && apk add --no-cache-dir --virtual build-deps gcc musl-dev \
-    && pip install --no-cache-dir "ara[server,postgresql]==$ARA_VERSION" gunicorn \
+    && pip install --no-cache-dir "ara[server]==$ARA_VERSION" psycopg2-binary gunicorn \
     && apk del build-deps
 
 COPY entrypoint.sh /
